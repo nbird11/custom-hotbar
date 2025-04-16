@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "customhotbar",
+	"version": "${version}",
+	"name": "Custom Hotbar",
+	"description": "Mod to customize the locations of hotbar items to match your keybinds.",
+	"authors": [
+		"nbird11 [Nathan Bird]"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/nbird11/custom-hotbar"
+	},
+	"license": "MIT",
+	"icon": "assets/customhotbar/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"dev.nbird.customhotbar.CustomHotbar"
+		],
+		"fabric-datagen": [
+			"dev.nbird.customhotbar.CustomHotbarDataGenerator"
+		],
+		"client": [
+			"dev.nbird.customhotbar.CustomHotbarClient"
+		]
+	},
+	"mixins": [
+		"customhotbar.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.13",
+		"minecraft": "~1.21.5",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
