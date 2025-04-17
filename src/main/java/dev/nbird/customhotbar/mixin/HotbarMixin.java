@@ -17,11 +17,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InGameHud.class)
 public class HotbarMixin {
-    // Using Minecraft's vanilla widgets texture (contains hotbar slots, selection indicator, etc.)
-    private static final Identifier WIDGETS_TEXTURE = Identifier.of("minecraft", "textures/gui/widgets.png");
+    // Using offhand slot texture for all slots
+    private static final Identifier SLOT_TEXTURE = Identifier.of("minecraft", "textures/gui/sprites/hud/hotbar_offhand_left.png");
+    private static final Identifier HOTBAR_SELECTION_TEXTURE = Identifier.of("minecraft", "textures/gui/sprites/hud/hotbar_selection.png");
     
     // Constants for layout
-    private static final int SLOT_SIZE = 20;  // Size of each slot
+    private static final int SLOT_SIZE = 24;  // Size of each slot and selection indicator
     
     @Shadow @Final private MinecraftClient client;
     
@@ -35,23 +36,24 @@ public class HotbarMixin {
 
         // Get screen dimensions for default positioning
         int screenHeight = context.getScaledWindowHeight();
-        int baseY = screenHeight - 20;
+        int baseY = screenHeight - 23;
+        int itemOffsetX = 3;
+        int itemOffsetY = 4;
 
-        // Default positions for each slot - will be configurable later
+        // Default positions for each slot
+        // TODO: make configurable later
         int[][] slotPositions = {
-            {10, baseY - 25*3},     // Slot 1
-            {35, baseY - 25*3},     // Slot 2
-            {60, baseY - 25*3},     // Slot 3
-            {85, baseY - 25*3},     // Slot 4
-            {85, baseY - 25*2},     // Slot R
-            {85, baseY - 25*1},     // Slot F
-            {110, baseY - 25*3},    // Slot 5
-            {110, baseY - 25*2},    // Slot T
-            {110, baseY - 25*1}     // Slot G
+            {0, baseY - 25*2},      // Slot 1
+            {25, baseY - 25*2},     // Slot 2
+            {50, baseY - 25*2},     // Slot 3
+            {75, baseY - 25*2},     // Slot 4
+            {75, baseY - 25*1},     // Slot R
+            {75, baseY - 25*0},     // Slot F
+            {100, baseY - 25*2},    // Slot 5
+            {100, baseY - 25*1},    // Slot T
+            {100, baseY - 25*0}     // Slot G
         };
-
-        // Position for offhand slot
-        int[] offhandPos = {85, baseY};  // Offhand Slot V
+        int[] offhandPos = {25, baseY};  // Offhand Slot V
 
         // Get the currently selected slot
         int selectedSlot = player.getInventory().getSelectedSlot();
@@ -61,32 +63,32 @@ public class HotbarMixin {
             int x = slotPositions[slot][0];
             int y = slotPositions[slot][1];
             
-            // Draw slot background
+            // Draw slot background using offhand texture
             context.drawTexture(
                 RenderLayer::getGuiTextured,
-                WIDGETS_TEXTURE,
-                x, y,
+                SLOT_TEXTURE,
+                x + 1, y,
                 0, 0,
                 SLOT_SIZE, SLOT_SIZE,
-                256, 256
+                29, 24  // Offhand texture dimensions
             );
             
             // Draw item in slot
             ItemStack itemStack = player.getInventory().getStack(slot);
             if (!itemStack.isEmpty()) {
-                context.drawItem(itemStack, x + 2, y + 2);
-                context.drawStackOverlay(client.textRenderer, itemStack, x + 2, y + 2);
+                context.drawItem(itemStack, x + itemOffsetX, y + itemOffsetY);
+                context.drawStackOverlay(client.textRenderer, itemStack, x + itemOffsetX, y + itemOffsetY);
             }
             
             // Highlight selected slot
             if (slot == selectedSlot) {
                 context.drawTexture(
                     RenderLayer::getGuiTextured,
-                    WIDGETS_TEXTURE,
-                    x - 1, y - 1,
-                    0, 22,
-                    24, 22,
-                    256, 256
+                    HOTBAR_SELECTION_TEXTURE,
+                    x, y,
+                    0, 0,
+                    SLOT_SIZE, SLOT_SIZE,
+                    24, 23  // Selection texture dimensions
                 );
             }
         }
@@ -99,15 +101,15 @@ public class HotbarMixin {
 
             context.drawTexture(
                 RenderLayer::getGuiTextured,
-                WIDGETS_TEXTURE,
+                SLOT_TEXTURE,
                 x, y,
                 0, 0,
                 SLOT_SIZE, SLOT_SIZE,
-                256, 256
+                29, 24  // Offhand texture dimensions
             );
 
-            context.drawItem(offhandStack, x + 2, y + 2);
-            context.drawStackOverlay(client.textRenderer, offhandStack, x + 2, y + 2);
+            context.drawItem(offhandStack, x + itemOffsetX, y + itemOffsetY);
+            context.drawStackOverlay(client.textRenderer, offhandStack, x + itemOffsetX, y + itemOffsetY);
         }
     }
 }
