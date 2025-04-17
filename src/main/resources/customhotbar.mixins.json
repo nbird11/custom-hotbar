@@ -2,8 +2,8 @@
 	"required": true,
 	"package": "dev.nbird.customhotbar.mixin",
 	"compatibilityLevel": "JAVA_21",
-	"mixins": [
-		"ExampleMixin"
+	"client": [
+		"HotbarMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
